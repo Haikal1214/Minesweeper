@@ -14,17 +14,21 @@ import { Cell } from './game/cell';
 export class AppComponent {
   title = 'minesweeper';
   board: Board;
+  score = 0;
 
   constructor() {
     this.board = new Board(20, 50);
   }
 
   checkCell(cell: Cell) {
-    const result = this.board.checkCell(cell);
+    const { result, revealedCells } = this.board.checkCell(cell);
     if (result === 'gameover') {
       alert('You lose');
     } else if (result === 'win') {
       alert('You win');
+    } else if (result === null) {
+      // Add 10 points for each safe cell that was revealed
+      this.score += revealedCells.length * 10;
     }
   }
 
@@ -38,5 +42,6 @@ export class AppComponent {
 
   reset() {
     this.board = new Board(20, 50);
+    this.score = 0;
   }
 }

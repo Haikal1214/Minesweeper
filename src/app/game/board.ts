@@ -22,7 +22,6 @@ export class Board {
     }
 
     // Count mines
-
     for (let y = 0; y < size; y++) {
       for (let x = 0; x < size; x++) {
         let adjacentMines = 0;
@@ -51,16 +50,18 @@ export class Board {
     return this.cells[y][x];
   }
 
-    checkCell(cell: Cell): 'gameover' | 'win' | null {
-        console.log(`Cell clicked: Row ${cell.row}, Column ${cell.column}, Status: ${cell.status}`);
+  checkCell(cell: Cell): { result: 'gameover' | 'win' | null, revealedCells: Cell[] } {
+    console.log(`Cell clicked: Row ${cell.row}, Column ${cell.column}, Status: ${cell.status}`);
+    const revealedCells: Cell[] = [];
 
     if (cell.status !== 'closed') {
-      return null;
+      return { result: null, revealedCells };
     } else if (cell.mine) {
       this.revealAll();
-      return 'gameover';
+      return { result: 'gameover', revealedCells };
     } else {
       cell.status = 'clear';
+      revealedCells.push(cell);
 
       // Empty cell, let's clear the whole block.
       if(cell.proximityMines === 0) {
@@ -69,18 +70,19 @@ export class Board {
             this.cells[cell.row + peer[0]] &&
             this.cells[cell.row + peer[0]][cell.column + peer[1]]
           ) {
-            this.checkCell(this.cells[cell.row + peer[0]][cell.column + peer[1]]);
+            const result = this.checkCell(this.cells[cell.row + peer[0]][cell.column + peer[1]]);
+            revealedCells.push(...result.revealedCells);
           }
         }
       }
 
-
       if (this.remainingCells === this.mineCount) {
-        return 'win';
+        return { result: 'win', revealedCells };
       }
-      return null;
+      return { result: null, revealedCells };
     }
   }
+
   revealAll() {
     for (const row of this.cells) {
       for (const cell of row) {

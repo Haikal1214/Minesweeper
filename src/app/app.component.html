@@ -12,6 +12,7 @@
 
 <div class="game-container">
   <h1>Minesweeper</h1>
+  <div class="score">Score: {{ score }}</div>
   <table>
     <tr *ngFor="let row of board.cells; index as y">
       <td
